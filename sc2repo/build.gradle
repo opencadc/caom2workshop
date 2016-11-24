@@ -1,0 +1,53 @@
+plugins {
+    id 'war'
+    id 'maven'
+    id 'maven-publish'
+    id 'com.jfrog.bintray' version '1.7.1'
+}
+
+repositories {
+    jcenter()
+    mavenLocal()
+    
+    // repo for jsky    
+    maven {
+        url = 'http://java.freehep.org/maven2'
+    }
+}
+
+apply from: '../caom2workshop.gradle'
+
+sourceCompatibility = 1.7
+
+group = 'ca.nrc.cadc'
+
+version = '1000'
+
+war {
+    archiveName = project.name + '##' + project.version + '.war'
+}
+
+dependencies {
+    compile 'log4j:log4j:1.2.+'
+    providedCompile 'javax.servlet:javax.servlet-api:3.1.+'
+    
+    compile 'org.opencadc:cadc-util:1.+'
+    runtime 'org.opencadc:cadc-log:[1.0.1,)'
+    compile 'org.opencadc:caom2-repo-server:[2.2.2,3.0)'
+    compile 'org.opencadc:cadc-access-control:[1.1.2,)'
+    compile 'org.opencadc:cadc-access-control-identity:1.+'
+    compile 'org.opencadc:cadc-vosi:[1.0.1,2.0)'
+   
+    runtime 'jstl:jstl:1.2+'
+    
+    testCompile 'junit:junit:4.+'
+    
+    intTestCompile 'org.opencadc:cadc-test-vosi:[1.0.1,)'
+    intTestCompile 'org.opencadc:caom2-test-repo:1.0.2' // exact version because 1.0.1 is broken
+}
+
+configurations {
+  runtime.exclude group: 'javax.servlet'
+  runtime.exclude group: 'net.sourceforge.jtds'
+  runtime.exclude group: 'org.postgresql'
+}

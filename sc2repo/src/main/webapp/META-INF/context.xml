@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Context>
+    <JarScanner scanClassPath="false" />
+    <WatchedResource>WEB-INF/web.xml</WatchedResource>
+
+    <ResourceLink name="jdbc/sandbox-repo"
+        global="jdbc/sandbox-repo"
+        type="javax.sql.DataSource" />       
+     
+</Context>
