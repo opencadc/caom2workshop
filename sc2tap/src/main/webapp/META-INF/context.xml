@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Context>
+
+    <WatchedResource>WEB-INF/web.xml</WatchedResource>
+
+    <!-- development server -->
+    <ResourceLink name="jdbc/uws"
+        global="jdbc/sandbox-uws"
+        type="javax.sql.DataSource" />
+        
+    <ResourceLink name="jdbc/tapuser"
+        global="jdbc/sandbox-tapuser"
+        type="javax.sql.DataSource" />
+
+    <ResourceLink name="jdbc/tapuploadadm"
+        global="jdbc/sandbox-tapupload"
+        type="javax.sql.DataSource" />
+    
+</Context>
