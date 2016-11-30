@@ -153,8 +153,10 @@ public class TempStorageManager implements ResultStore, InlineContentHandler
     {
         Long num = null;
         if (maxRows != null)
-            num = new Long(maxRows.intValue());
+            num = new Long(maxRows);
         
+        // TODO: get requested content-type from job and store it with file
+        // so that TempStorageAction can set content-type header correctly
         File dest = getDestFile(filename);
         URL ret = getURL(filename);
         FileOutputStream ostream = null;
@@ -173,6 +175,8 @@ public class TempStorageManager implements ResultStore, InlineContentHandler
 
     public URL put(Throwable t, TableWriter writer) throws IOException
     {
+        // TODO: get requested content-type from job and store it with file
+        // so that TempStorageAction can set content-type header correctly
         File dest = getDestFile(filename);
         URL ret = getURL(filename);
         FileOutputStream ostream = null;

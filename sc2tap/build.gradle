@@ -37,7 +37,7 @@ dependencies {
     compile 'org.opencadc:cadc-uws-server:[1.0,)'
     compile 'org.opencadc:cadc-tap-server:[1.0,)'
     compile 'org.opencadc:caom2-tap-server:[1.0,)'
-    compile 'org.opencadc:cadc-rest:1.0'
+    compile 'org.opencadc:cadc-rest:[1.0.2,)'
     
     runtime 'org.opencadc:cadc-log:1.+'
     runtime 'org.restlet.jee:org.restlet.ext.servlet:2.0.2'

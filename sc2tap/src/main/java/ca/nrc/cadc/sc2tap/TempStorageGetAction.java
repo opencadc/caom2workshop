@@ -69,12 +69,13 @@ package ca.nrc.cadc.sc2tap;
 
 
 import ca.nrc.cadc.net.ResourceNotFoundException;
+import ca.nrc.cadc.rest.InlineContentHandler;
 import ca.nrc.cadc.rest.RestAction;
-import ca.nrc.cadc.util.FileUtil;
-import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
-import java.io.Writer;
+import java.io.InputStream;
+import java.io.OutputStream;
 import org.apache.log4j.Logger;
 
 /**
@@ -88,6 +89,12 @@ public class TempStorageGetAction extends RestAction
     public TempStorageGetAction() { }
 
     @Override
+    protected InlineContentHandler getInlineContentHandler()
+    {
+        return null;
+    }
+
+    @Override
     public void doAction()
         throws Exception
     {
@@ -97,25 +104,25 @@ public class TempStorageGetAction extends RestAction
         if (!f.exists())
             throw new ResourceNotFoundException("not found: " + filename);
         
-        FileReader fis = null;
-        Writer ostream = null;
+        InputStream fis = null;
+        OutputStream ostream = null;
         try
         {
-            //TODO: TempStorageManager has to stoer the requested content-type somewhere
+            //TODO: TempStorageManager has to store the requested content-type somewhere
             //syncOutput.setHeader("Content-Type", contentType);
             syncOutput.setHeader("Content-Length", f.length());
             syncOutput.setCode(200);
 
-            // TODO: switch to byte[] and streams once supported in cadc-rest
-            fis = new FileReader(f);
-            ostream = new BufferedWriter(syncOutput.getWriter());
-            char[] buf = new char[16384];
+            fis = new FileInputStream(f);
+            ostream = syncOutput.getOutputStream();
+            byte[] buf = new byte[16384];
             int num = fis.read(buf);
             while (num > 0)
             {
                 ostream.write(buf, 0, num);
                 num = fis.read(buf);
             }
+            ostream.flush();
         }
         finally
         {
