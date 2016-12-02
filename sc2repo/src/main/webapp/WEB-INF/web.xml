@@ -15,6 +15,7 @@
             <param-name>logLevelPackages</param-name>
             <param-value>
                 ca.nrc.cadc.sc2repo
+                ca.nrc.cadc.rest
                 ca.nrc.cadc.caom2
                 ca.nrc.cadc.wcs
                 ca.nrc.cadc.vosi
@@ -33,7 +34,23 @@
 
     <servlet>
         <servlet-name>RepoServlet</servlet-name>
-        <servlet-class>ca.nrc.cadc.caom2.repo.RepoServlet</servlet-class>
+        <servlet-class>ca.nrc.cadc.rest.RestServlet</servlet-class>
+        <init-param>
+            <param-name>get</param-name>
+            <param-value>ca.nrc.cadc.caom2.repo.action.GetAction</param-value>
+        </init-param>
+        <init-param>
+            <param-name>post</param-name>
+            <param-value>ca.nrc.cadc.caom2.repo.action.PostAction</param-value>
+        </init-param>
+        <init-param>
+            <param-name>put</param-name>
+            <param-value>ca.nrc.cadc.caom2.repo.action.PutAction</param-value>
+        </init-param>
+        <init-param>
+            <param-name>delete</param-name>
+            <param-value>ca.nrc.cadc.caom2.repo.action.DeleteAction</param-value>
+        </init-param>
         <load-on-startup>2</load-on-startup>
     </servlet>
 
@@ -96,7 +113,7 @@
         <web-resource-collection>
             <web-resource-name>auth</web-resource-name>
             <description/>
-            <url-pattern>/auth/*</url-pattern>
+            <url-pattern>/auth-observations/*</url-pattern>
             <url-pattern>/logControl/*</url-pattern>
             <http-method>GET</http-method>
             <http-method>POST</http-method>

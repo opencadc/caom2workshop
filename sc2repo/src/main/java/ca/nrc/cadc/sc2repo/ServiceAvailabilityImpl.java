@@ -118,12 +118,13 @@ public class ServiceAvailabilityImpl implements WebService
             CheckResource cr = AuthenticatorImpl.getAvailabilityCheck();
             cr.check();
             
-            // TODO: check that GMS service is available
+            // TODO: check that GMS service(s) referenced in config are available
+            
             File config = new File(System.getProperty("user.home") + "/config/sc2repo.properties");
             CaomRepoConfig rc = new CaomRepoConfig(config);
             
             if (rc.isEmpty())
-                throw new IllegalStateException("no RepoConfig.Item(s)found");
+                throw new IllegalStateException("no CaomRepoConfig.Item(s) found in " + config);
 
             Iterator<CaomRepoConfig.Item> i = rc.iterator();
             while ( i.hasNext() )

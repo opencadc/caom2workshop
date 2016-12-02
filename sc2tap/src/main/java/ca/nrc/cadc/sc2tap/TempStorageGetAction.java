@@ -98,7 +98,7 @@ public class TempStorageGetAction extends RestAction
     public void doAction()
         throws Exception
     {
-        String filename = path;
+        String filename = syncInput.getPath();
         TempStorageManager sm = new TempStorageManager();
         File f = sm.getStoredFile(filename);
         if (!f.exists())
