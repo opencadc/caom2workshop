@@ -196,7 +196,7 @@ public class PackageIntTest
         }
     }
     
-    @Test
+    //@Test
     public void testSingleArtifactRedirectAuthCAOM()
     {
         try
@@ -207,7 +207,7 @@ public class PackageIntTest
             
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             HttpDownload get = new HttpDownload(url,bos);
-            get.setRequestProperty("Authorization", "Basic Y2FkY3JlZ3Rlc3QxOnFTMVU0Mlk=");
+            get.setRequestProperty("Authorization", "***REDACTED***");
             get.setFollowRedirects(false);
             get.run();
             Assert.assertNull("throwable", get.getThrowable());
@@ -225,7 +225,7 @@ public class PackageIntTest
         }
     }
     
-    @Test
+    //@Test
     public void testSingleArtifactRedirectAuthIVO()
     {
         try
@@ -236,7 +236,7 @@ public class PackageIntTest
             
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             HttpDownload get = new HttpDownload(url,bos);
-            get.setRequestProperty("Authorization", "Basic Y2FkY3JlZ3Rlc3QxOnFTMVU0Mlk=");
+            get.setRequestProperty("Authorization", "***REDACTED***");
             get.setFollowRedirects(false);
             get.run();
             Assert.assertNull("throwable", get.getThrowable());
