@@ -107,9 +107,9 @@ import org.junit.Test;
  *
  * @author jburke
  */
-public class BasicWSTest
+public class LinksTest
 {
-    private static Logger log = Logger.getLogger(BasicWSTest.class);
+    private static Logger log = Logger.getLogger(LinksTest.class);
 
     protected static final String QUERY_URI1 = "caom:IRIS/f212h000/IRAS-25um";
     protected static final String QUERY_URI2 = "caom:IRIS/f097h000/IRAS-60um";
@@ -128,14 +128,14 @@ public class BasicWSTest
         Log4jInit.setLevel("ca.nrc.cadc.reg", Level.INFO);
     }
 
-    public BasicWSTest() { }
+    public LinksTest() { }
 
     @BeforeClass
     public static void before() throws Exception
     {
         try
         {
-            File crt = FileUtil.getFileFromResource("x509_CADCRegtest1.pem", BasicWSTest.class);
+            File crt = FileUtil.getFileFromResource("x509_CADCRegtest1.pem", LinksTest.class);
             SSLUtil.initSSL(crt);
             log.debug("initSSL: " + crt);
         }
