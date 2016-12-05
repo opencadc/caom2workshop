@@ -70,6 +70,19 @@
 package ca.nrc.cadc.sc2soda;
 
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.net.URI;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 import ca.nrc.cadc.auth.AuthMethod;
 import ca.nrc.cadc.auth.SSLUtil;
 import ca.nrc.cadc.net.HttpDownload;
@@ -79,33 +92,24 @@ import ca.nrc.cadc.reg.Standards;
 import ca.nrc.cadc.reg.client.RegistryClient;
 import ca.nrc.cadc.util.FileUtil;
 import ca.nrc.cadc.util.Log4jInit;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.net.URI;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 /**
  *
  * @author pdowler
  */
-public class SodaCutoutTest 
+public class SodaCutoutTest
 {
     private static final Logger log = Logger.getLogger(SodaCutoutTest.class);
 
     protected static final String QUERY_URI = "ad:IRIS/I212B2H0";
     protected static final String QUERY_PATH = "/IRIS/I212B2H0";
 
+    protected static final String VOS_QUERY_URI = "vos://cadc.nrc.ca~vospace/CAOMworkshop/CADC/I001B4H0";
+
     // this test is pretty extensive: 4-D cube, spatial is in GLON-CAR,GLAT-CAR, energy is VRAD, and
     // it has a 1-bin polarization axis for a total of 1024x1024x272x1
-    //protected static final String CUBE_URI = "ad:CGPS/cgps_ma1_hi_line_image"; 
-    
+    //protected static final String CUBE_URI = "ad:CGPS/cgps_ma1_hi_line_image";
+
     protected static URL httpResourceURL;
     protected static URL httpsResourceURL;
     protected static URL httpDataURL;
@@ -115,9 +119,9 @@ public class SodaCutoutTest
     {
         Log4jInit.setLevel("ca.nrc.cadc.sc2soda", Level.INFO);
     }
-    
+
     public SodaCutoutTest() { }
-    
+
     @BeforeClass
     public static void before() throws Exception
     {
@@ -133,7 +137,7 @@ public class SodaCutoutTest
         }
 
         RegistryClient rc = new RegistryClient();
-        
+
         URI serviceURI = new URI("ivo://cadc.nrc.ca/sc2soda");
         httpResourceURL = rc.getServiceURL(serviceURI, Standards.SODA_SYNC_10, AuthMethod.ANON);
         httpsResourceURL = rc.getServiceURL(serviceURI, Standards.SODA_SYNC_10, AuthMethod.CERT);
@@ -141,7 +145,7 @@ public class SodaCutoutTest
         serviceURI = new URI("ivo://cadc.nrc.ca/data");
         httpDataURL = rc.getServiceURL(serviceURI, Standards.DATA_10, AuthMethod.ANON);
         httpsDataURL = rc.getServiceURL(serviceURI, Standards.DATA_10, AuthMethod.CERT);
-       
+
         log.debug("httpResourceURL: " + httpResourceURL);
         log.debug("httpsResourceURL: " + httpsResourceURL);
     }
@@ -232,7 +236,65 @@ public class SodaCutoutTest
             log.info("testPOS_CircleNoOverlap: " + get.getResponseCode() + "," + get.getThrowable());
             Assert.assertNotNull("throwable", get.getThrowable());
             Assert.assertEquals("response code", 400, get.getResponseCode());
-            
+
+        }
+        catch(Exception unexpected)
+        {
+            log.error("unexpected exception", unexpected);
+            Assert.fail("unexpected exception: " + unexpected);
+        }
+    }
+
+    @Test
+    public void testVOSpaceCutout()
+    {
+        log.debug("testVOSpaceCutout");
+        try
+        {
+            URI uri = new URI(VOS_QUERY_URI);
+
+            Map<String,Object> params = new HashMap<String,Object>();
+            params.put("ID", uri);
+            params.put("POS", "circle 357 -89 0.1");
+            log.debug("POST: " + httpResourceURL + " params: " + params.size());
+            HttpPost hp = new HttpPost(httpResourceURL, params, false);
+            hp.run();
+            if (hp.getThrowable() != null)
+                throw (Exception) hp.getThrowable();
+
+            Assert.assertEquals("redirect", 303, hp.getResponseCode());
+            URL actual = hp.getRedirectURL();
+            Assert.assertNotNull("redirect", actual);
+            log.info("testVOSpaceCutout job redirect: " + actual);
+            HttpDownload get = new HttpDownload(actual, new ByteArrayOutputStream());
+            get.setFollowRedirects(false);
+            get.run();
+            if (get.getThrowable() != null)
+                throw (Exception) get.getThrowable();
+
+            Assert.assertEquals("redirect", 303, get.getResponseCode());
+            actual = get.getRedirectURL();
+            Assert.assertNotNull("redirect", actual);
+            log.info("testPOS_Circle redirect: " + actual);
+
+            String query = actual.getQuery();
+            Assert.assertNotNull("query", query);
+
+            String[] qps = query.split("&");
+            boolean foundCutout = false;
+            for (String p : qps)
+            {
+                String[] pv = p.split("=");
+                Assert.assertEquals("param=value", 2, pv.length);
+                if ("view".equals(pv[0]))
+                {
+                    foundCutout = true;
+                    String val = NetUtil.decode(pv[1]);
+                    Assert.assertEquals("view", "cutout", val);
+                }
+            }
+            Assert.assertTrue("foundCutout", foundCutout);
+
         }
         catch(Exception unexpected)
         {
@@ -242,7 +304,7 @@ public class SodaCutoutTest
     }
 
     /*
-    @Test
+    //@Test
     public void testBAND()
     {
         log.debug("testBAND");
@@ -301,7 +363,7 @@ public class SodaCutoutTest
         }
     }
     */
-    
+
     @Test
     public void testBAND_Overlap()
     {
@@ -356,7 +418,7 @@ public class SodaCutoutTest
             Assert.fail("unexpected exception: " + unexpected);
         }
     }
-    
+
     @Test
     public void testBAND_NoOverlap()
     {
@@ -379,7 +441,7 @@ public class SodaCutoutTest
             HttpDownload get = new HttpDownload(actual, new ByteArrayOutputStream());
             get.setFollowRedirects(true);
             get.run();
-            
+
             log.info("testBAND_NoOverlap: " + get.getResponseCode() + "," + get.getThrowable());
             Assert.assertNotNull("throwable", get.getThrowable());
             Assert.assertEquals("response code", 400, get.getResponseCode());
@@ -392,7 +454,7 @@ public class SodaCutoutTest
     }
 
     /*
-    @Test
+    //@Test
     public void testPOS_BAND()
     {
         log.debug("testPOS_BAND");
@@ -452,9 +514,9 @@ public class SodaCutoutTest
         }
     }
     */
-    
+
     /*
-    @Test
+    //@Test
     public void testPOS_NamedParts()
     {
         log.debug("testPOS_NamedParts");
@@ -516,23 +578,23 @@ public class SodaCutoutTest
         }
     }
     */
-    
+
     /*
-    @Test
+    //@Test
     public void testBAND_TiledChunk()
     {
         log.debug("testBAND_TiledChunk");
         try
         {
             URI uri = new URI(TILED_CHUNK_URI);
-            
+
             // first tile: 1.0/369.093200684/2724.0/375.080413818
             // last tile: 66060.0/495.225585938/70999.0/510.2114868
 
             Map<String,Object> params = new HashMap<String,Object>();
             params.put("ID", uri);
             params.put("BAND", "371.0e-9 372.0e-9");
-            
+
             log.debug("POST: " + httpResourceURL + " params: " + params.size());
             HttpPost hp = new HttpPost(httpResourceURL, params, false);
             hp.run();
@@ -581,23 +643,23 @@ public class SodaCutoutTest
         }
     }
     */
-    
+
     /*
-    @Test
+    //@Test
     public void testBAND_TiledMultiChunk()
     {
         log.debug("testBAND_TiledMultiChunk");
         try
         {
             URI uri = new URI(TILED_MULTICHUNK_URI);
-            
+
             // first tile: 1.0/369.093200684/2724.0/375.080413818
             // last tile: 66060.0/495.225585938/70999.0/510.2114868
 
             Map<String,Object> params = new HashMap<String,Object>();
             params.put("ID", uri);
             params.put("BAND", "371.0e-9 372.0e-9");
-            
+
             log.debug("POST: " + httpResourceURL + " params: " + params.size());
             HttpPost hp = new HttpPost(httpResourceURL, params, false);
             hp.run();
