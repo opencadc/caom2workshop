@@ -20,9 +20,13 @@
 
 ## services
 
+![alt text](https://github.com/pdowler/caom2workshop/raw/master/caom2workshop-arch.png "CAOM service connectivity")
+
 ### non-CAOM services used in the background
 
 * CADC data web service for archive files
+
+* CADC credential delegation service (CDP) to support inter-service authenticated calls
 
 * CANFAR user and group services for authentication and authorization support
 
