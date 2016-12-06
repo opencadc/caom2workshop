@@ -2,5 +2,5 @@ language: java
 jdk:
   - openjdk7
   - oraclejdk8
-script: for mod in sc2repo sc2tap sc2links sc2meta sc2pkg sc2soda; do cd $mod; gradle --info assemble || break -1; cd ..; done
+script: for mod in sc2repo sc2tap sc2links sc2meta sc2pkg sc2soda; do cd $mod; gradle --info build || break -1; cd ..; done
 
