@@ -163,7 +163,7 @@ public class TestUtil
             {
                 indexes[7] = index;
             }
-            else if (field.getName().equals("file_uri"))
+            else if (field.getName().equals("readable"))
             {
                 indexes[8] = index;
             }
@@ -177,7 +177,7 @@ public class TestUtil
         Assert.assertNotNull("content_type not found", indexes[5]);
         Assert.assertNotNull("content_length not found", indexes[6]);
         Assert.assertNotNull("error_message not found", indexes[7]);
-        Assert.assertNotNull("file_uri not found", indexes[8]);
+        Assert.assertNotNull("readable not found", indexes[8]);
         return indexes;
     }
 
