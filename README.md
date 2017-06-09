@@ -1,5 +1,8 @@
 # CAOM web services for the Dec 2016 workshop
 
+## NOTE: The code in this repository was built using CAOM-2.2 and is no longer being maintained. 
+It has not been updated to CAOM-2.3 and may need a little work (at least in the build files) and testing.
+
 ## build system
 
 * java + gradle
